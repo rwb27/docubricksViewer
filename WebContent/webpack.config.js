@@ -1,5 +1,6 @@
 module.exports = {
-    entry: "./src/index.tsx",
+    //entry: "./src/index.tsx",
+    entry: "./src/test_modules.ts",
     output: {
         filename: "viewerbundle.js",
         path: __dirname + "/"
@@ -33,4 +34,7 @@ module.exports = {
         "react": "React",
         "react-dom": "ReactDOM"
     },
+    node: {
+	fs: "empty"
+    }
 };
