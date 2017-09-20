@@ -63,8 +63,58 @@ function stringFromXML(tag: string, xml: XMLDict, def: string|null=""): string{
     if(typeof element == "string"){
         return element as string;
     }else{
-        console.log("Warning: tried to extract a string from tag <"+tag+"> in XML snippet:\n",xml,"Got something else instead: ",element);
-        throw(Error("Tried to retrieve a string from tag <"+tag+"> but it wasn't a string!"));
+        try{
+            // if we're using "explicit children" we may need to ask for the "_" element
+            let contents = element['_'];
+            if(typeof contents == "string"){
+                // This should work if there's exactly one string involved
+                return contents as string;
+            }
+            if(contents.length == 1){
+                let content = contents[0];
+                if(typeof content == "string"){
+                    // this guards against multiple strings
+                    return content as string;
+                }
+            }
+        }catch(e){
+            console.log("Warning: tried to extract a string from tag <"+tag+"> in XML snippet:\n",xml,"Got something else instead: ",element);
+            throw(Error("Tried to retrieve a string from tag <"+tag+"> but it wasn't a string!"));
+        }
+    }
+}
+function xmlDictToString(xml: XMLDict): string{
+	// Concatenate together the strings and tags in an XMLDict to produce a valid XML string
+    // NB this will only work if the parser is set to preserveChildrenOrder and has explicitChildren and includes text elements.
+	console.log("xmldicttostring");
+    console.log(xml['$$']);
+	//var builder = new xml2js.Builder({headless:true});
+	//return builder.buildObject(xml);
+    let output = "";
+    let elements = xml['$$'];
+    for(let e in elements){
+        console.log(e);
+    }
+    return output;
+}
+function stringOfHTMLFromXML(tag: string, xml: XMLDict, def: string|null=" "): string{
+	// retrieve the contents of a tag as a string (i.e. the tag shouldn't contain other tags)
+    let element = tagFromXML(tag, xml);
+    if(element == null){
+		// if the element is missing, return the default value if present, or throw an error.
+        if(def != null){
+            return def;
+        }else{
+            throw(Error("Error: there was no '"+tag+"' tag, and one is required."));
+        }
+    }
+    if(typeof element == "string"){
+		// a string is assumed to be valid HTML.  TODO: validate this...
+        return element as string;
+    }else{
+		// if we have an XMLDict, reconstitute the XML as a string. 
+		// TODO: validate that we only have allowed tags!
+        return xmlDictToString(element);
     }
 }
 function objectFromXML<T extends CopiableFromXML>(c: new () => T, tag: string, xml: XMLDict, allowEmpty: boolean=true):T|null{
@@ -449,7 +499,7 @@ export class AssemblyStep implements CopiableFromXML{
     public components: AssemblyStepComponent[];
 
     copyFromXML(xml: XMLDict): void{
-        this.description = stringFromXML("description", xml);
+        this.description = stringOfHTMLFromXML("description", xml);
         this.files = mediaFilesFromXML(xml);
         this.components = arrayFromXML(AssemblyStepComponent, "component", xml);
     }
@@ -646,7 +696,8 @@ export function docubricksFromJSON(s:string):Project{
 }
 
 export function docubricksFromXML(s:string, callback: (p: Project)=>any ){
-    xml2js.parseString(s, function(err: any, res: any){
+    let parser = new xml2js.Parser({explicitChildren:true, charsAsChildren:true, preserveChildrenOrder:true});
+    parser.parseString(s, function(err: any, res: any){
         var proj:Project=new Project();
 
         //Copy bricks
