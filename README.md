@@ -1,16 +1,18 @@
 ﻿Docubricks viewer
 ===========================
 
-Viewer for [docubricks](http://docubricks.com/) - high quality Open Science Hardware documentations.
+Viewer for [docubricks](http://docubricks.com/) - high quality Open Science Hardware documentation.  Docubricks works like an open-source Instructables, turning easily-interpreted XML files into nicely formatted instructions.
 
 ### Building
-This viewer is built using React and Webpack:
+This viewer is built using React and Webpack, and renders the instructions using client-side code that runs in most modern web browsers.  You'll need to install node.js and npm, and then you can build with:
 
 
 #### Build
 ```
+$ npm install
 $ webpack
 ```
+This produces the ``viewerbundle.js`` script that you can use together with one of the included HTML files to view docubricks XML files in a browser.
 
 #### Devbuild
 ```
@@ -21,7 +23,7 @@ $ webpack-dev-server --host 0.0.0.0 --port 8080
 After starting the development server, go to http://localhost:8080/viewertest-xml-github.html to view the OpenFlexure Microscope documentation as an example.  You can view any DocuBricks project that can be retrieved via HTTP requests by specifying its URL in the ``docubricks_xml_url`` ``<div>`` element (in ``viewertest-xml-github.html``).  Security restrictions mean the JavaScript code that renders documentation can't access files on your hard drive - so the easiest way to view files you have locally is to place them in the ``WebContent`` folder in the "project" directory.
 
 ### Deploying and using
-Using this viewer on your GitHub project is simple; first, switch to your ``gh_pages`` branch, then copy the ``css`` folder, ``viewerbundle.js``, ``node_modules/react``, ``node_modules/react_dom``, and one of the HTML files into a folder in the repository.  Set the URL to point to the raw version of your XML file (i.e. the address you get when you click the "raw" link on GitHub).  Now, when you visit that HTML page, you should see your documentation nicely rendered.  The OpenFlexure Microscope is an example of this - see the [docubricks folder there](https://github.com/rwb27/openflexure_microscope/tree/gh-pages/docubricks) for details.
+Using this viewer on your GitHub project is simple; first, switch to your ``gh_pages`` branch, then copy the ``css`` folder, ``viewerbundle.js``, ``node_modules/react``, ``node_modules/react_dom``, and one of the HTML files into a folder in the repository.  Set the URL to point to the raw version of your XML file (i.e. the address you get when you click the "raw" link on GitHub).  Now, when you visit that HTML page, you should see your documentation nicely rendered.  The OpenFlexure Microscope has an example of this - see the [docubricks folder there](https://github.com/rwb27/openflexure_microscope/tree/gh-pages/docubricks) for details.
 
 
 ### Docubricks structure:
